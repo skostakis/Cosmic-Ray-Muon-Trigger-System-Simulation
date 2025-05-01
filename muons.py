@@ -78,7 +78,38 @@ ax3d.set_title(f"3D Particle Trajectories (z = {z_3d} m)")
 ax3d.legend()
 ax3d.view_init(elev=25, azim=45)
 
-# Prepare the θ Plots
+# ----------------------------
+# 2D Histogram of Impact Positions at z = 1.0 m
+# ----------------------------
+z_target = 1.0
+r   = z_target / np.cos(theta)
+x0  = np.random.uniform(-half, half, N)
+y0  = np.random.uniform(-half, half, N)
+dx  = r * np.sin(theta) * np.cos(phi)
+dy  = r * np.sin(theta) * np.sin(phi)
+xh  = x0 + dx
+yh  = y0 + dy
+
+inside = (
+    (xh >= -half) & (xh <= half) &
+    (yh >= -half) & (yh <= half)
+)
+
+# Plot 2D histogram for accepted particles only
+plt.figure(figsize=(8, 6), facecolor='white')
+plt.hist2d(xh[inside], yh[inside], bins=100, cmap='viridis')
+plt.colorbar(label='Counts')
+plt.xlabel('x [m]')
+plt.ylabel('y [m]')
+plt.title('2D Impact Position Histogram on Bottom Detector (z = 1.0 m)')
+plt.grid(False)
+plt.axis('equal')
+plt.tight_layout()
+plt.show()
+
+# ----------------------------
+# Plot the θ Distributions
+# ----------------------------
 
 fig, (ax_gen, ax) = plt.subplots(2, 1, figsize=(8, 12), facecolor='white', sharex=True)
 
@@ -131,6 +162,71 @@ ax.set_ylabel('Counts')
 ax.set_title('Theta Distribution for Different Trigger Distances (Bottom Detector)')
 ax.legend()
 ax.grid(True)
+
+
+# ----------------------------
+# Plot the φ Distribution
+# ----------------------------
+
+fig_phi, (ax_phi_gen, ax_phi_meas) = plt.subplots(2, 1, figsize=(8, 12), facecolor='white', sharex=True)
+
+# ----------------------------
+# Plot the Generated φ Distribution (Top subplot)
+# ----------------------------
+phi_deg = np.degrees(phi)
+phi_bins = np.linspace(0, 360, 181)
+gen_counts_phi, _ = np.histogram(phi_deg, bins=phi_bins)
+
+ax_phi_gen.hist(
+    phi_deg,
+    bins=phi_bins,
+    histtype='step',
+    linewidth=1.5,
+    label='Generated φ'
+)
+ax_phi_gen.set_ylabel('Counts')
+ax_phi_gen.set_title('Generated Phi Distribution (Top Detector)')
+ax_phi_gen.legend()
+ax_phi_gen.grid(True)
+
+# ----------------------------
+# Plot the Generated φ Distribution (Bottom subplot)
+# ----------------------------
+for z in z_values:
+    r   = z / np.cos(theta)
+    x0  = np.random.uniform(-half, half, N)
+    y0  = np.random.uniform(-half, half, N)
+    dx  = r * np.sin(theta) * np.cos(phi)
+    dy  = r * np.sin(theta) * np.sin(phi)
+    xh  = x0 + dx
+    yh  = y0 + dy
+
+    inside = (
+        (xh >= -half) & (xh <= half) &
+        (yh >= -half) & (yh <= half)
+    )
+
+    phi_inside_deg = phi_deg[inside]
+    acc_counts_phi, _ = np.histogram(phi_inside_deg, bins=phi_bins)
+    weights_per_bin_phi = gen_counts_phi / np.maximum(acc_counts_phi, 1)
+    bin_idx_phi = np.digitize(phi_inside_deg, bins=phi_bins) - 1
+    bin_idx_phi = np.clip(bin_idx_phi, 0, len(weights_per_bin_phi) - 1)
+    evt_weights_phi = weights_per_bin_phi[bin_idx_phi]
+
+    ax_phi_meas.hist(
+        phi_inside_deg,
+        bins=phi_bins,
+        weights=evt_weights_phi,
+        histtype='step',
+        linewidth=1.5,
+        label=f'z = {z:.2f} m'
+    )
+
+ax_phi_meas.set_xlabel('φ (degrees)')
+ax_phi_meas.set_ylabel('Counts')
+ax_phi_meas.set_title('Phi Distribution for Different Trigger Distances (Bottom Detector)')
+ax_phi_meas.legend()
+ax_phi_meas.grid(True)
 
 plt.tight_layout()
 plt.show()
