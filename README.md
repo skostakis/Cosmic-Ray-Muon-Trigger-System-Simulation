@@ -12,4 +12,4 @@ Once a muon is generated on the top surface, we check if its track intersects th
 
 If θ ≤ θ_max (a specific maximum angle), then the muon's trajectory reaches the bottom detector.
 
-In this case, we consider it a trigger event because both the top and bottom detectors are hit.
+In this case, we consider it a trigger event because both the top and bottom detectors are "hit".
