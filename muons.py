@@ -20,13 +20,13 @@ z_values = [0.0, 0.5, 1.0, 1.25, 2.0]
 side     = 1.0
 half     = side/2
 
-# Draw angles once
+# Draw angles
 u         = np.random.rand(N)
 theta     = inverse_cdf(u)
 phi       = 2*np.pi*np.random.rand(N)
 theta_deg = np.degrees(theta)
 
-# Precompute the "true" (z=0) histogram
+# Precompute the z=0 histogram
 bins       = np.linspace(-90, 90, 91)
 gen_counts, _ = np.histogram(theta_deg, bins=bins)
 
