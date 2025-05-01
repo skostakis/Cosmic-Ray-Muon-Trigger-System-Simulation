@@ -1,4 +1,4 @@
-#Cosmic Ray Muon Trigger System Simulation
+# Cosmic Ray Muon Trigger System Simulation
 
 This is Cosmic Ray Muon Trigger System Simulation, a small project I got the chance to work on with my colleage and dear friend Georgios Koryfidis. The project was done in the context of the course "Graduate Studies in Experimental Data Analysis" and its goal is to simulate cosmic ray muons that pass through two square surfaces acting like detectors.
 
