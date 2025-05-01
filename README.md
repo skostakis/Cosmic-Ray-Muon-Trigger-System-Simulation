@@ -2,4 +2,4 @@ This is Cosmic Ray Muon Trigger System Simulation, a small project I got the cha
 
 The top surface creates events (points) in a uniform way. The theta angle (or zenith angle) generation follows the cos^2 distribution, while the phi angle (or polar angle) generation is uniform. The track of a muon may or may not pass through the bottom detector (after its birth on the top surface) depending on the value of its zenith angle. If the angle is smaller or equal to the maximum value of theta then the track hits the bottom detector and we say we have a trigger event.
 
-To run this copy and paste the code muons.py. Make sure you have all the nescassary packages installed. Run the code and enjoy!
+Download the code muons.py. Make sure you have all the nescassary packages installed. Run the code and enjoy!
