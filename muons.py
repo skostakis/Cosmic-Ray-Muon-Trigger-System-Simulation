@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import quad
 from scipy.interpolate import interp1d
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.gridspec as gridspec
 
 np.random.seed(42)
 
@@ -16,42 +18,54 @@ inverse_cdf = interp1d(cdf_vals, grid, bounds_error=False,
 
 # PARAMETERS SETUP
 N        = 100_000
-z_values = [0.0, 0.5, 1.0, 1.25, 2.0]
+z_values = [0.0, 0.5, 1.0, 1.5, 2.0]
 side     = 1.0
 half     = side/2
 
-# Draw angles
+# Draw angles once
 u         = np.random.rand(N)
 theta     = inverse_cdf(u)
 phi       = 2*np.pi*np.random.rand(N)
 theta_deg = np.degrees(theta)
 
-# Precompute the z=0 histogram
+# Precompute the "true" (z=0) histogram
 bins       = np.linspace(-90, 90, 91)
 gen_counts, _ = np.histogram(theta_deg, bins=bins)
 
-# ----------------------------
-# 3D Plot of Particle Trajectories (for a single z value)
-# ----------------------------
-from mpl_toolkits.mplot3d import Axes3D  # Needed for 3D plotting
+# Set z value for 3D and 2D plots
+z_3d = z_target = 1.0
 
-# 3D Plot
-z_3d = 1.0 # Set any distance you want
+# Prepare data for 3D plot
 r3d = z_3d / np.cos(theta)
-x0_3d = np.random.uniform(-half, half, 100)  # fewer for clarity
+x0_3d = np.random.uniform(-half, half, 100)
 y0_3d = np.random.uniform(-half, half, 100)
 phi_3d = 2*np.pi*np.random.rand(100)
 theta_3d = inverse_cdf(np.random.rand(100))
-
 dx3d = r3d[:100] * np.sin(theta_3d) * np.cos(phi_3d)
 dy3d = r3d[:100] * np.sin(theta_3d) * np.sin(phi_3d)
 xh3d = x0_3d + dx3d
 yh3d = y0_3d + dy3d
 
-fig3d = plt.figure(figsize=(10, 8), facecolor='white')
-ax3d = fig3d.add_subplot(111, projection='3d')
+# Prepare data for 2D histogram
+r = z_target / np.cos(theta)
+x0 = np.random.uniform(-half, half, N)
+y0 = np.random.uniform(-half, half, N)
+dx = r * np.sin(theta) * np.cos(phi)
+dy = r * np.sin(theta) * np.sin(phi)
+xh = x0 + dx
+yh = y0 + dy
+inside = (
+    (xh >= -half) & (xh <= half) &
+    (yh >= -half) & (yh <= half)
+)
 
-# Draw the source (z=0) and target (z=-z_3d) square boundaries
+# Combined Figure with 3D and 2D plots
+fig = plt.figure(figsize=(14, 6), facecolor='white')
+gs = gridspec.GridSpec(1, 2, width_ratios=[1.2, 1])
+
+# 3D Trajectory plot
+ax3d = fig.add_subplot(gs[0], projection='3d')
+
 def draw_square(ax, z_val, color, label=None):
     corners = [
         [-half, -half, z_val],
@@ -66,9 +80,8 @@ def draw_square(ax, z_val, color, label=None):
 draw_square(ax3d, 0, 'blue', label='Source plane (z=0)')
 draw_square(ax3d, -z_3d, 'red', label=f'Target plane (z=-{z_3d} m)')
 
-# Plot a few trajectories
 for i in range(100):
-    ax3d.plot([x0_3d[i], xh3d[i]], [y0_3d[i], yh3d[i]], [0, -z_3d], 
+    ax3d.plot([x0_3d[i], xh3d[i]], [y0_3d[i], yh3d[i]], [0, -z_3d],
               color='black', alpha=0.3, lw=0.5)
 
 ax3d.set_xlabel("X [m]")
@@ -78,55 +91,31 @@ ax3d.set_title(f"3D Particle Trajectories (z = {z_3d} m)")
 ax3d.legend()
 ax3d.view_init(elev=25, azim=45)
 
-# ----------------------------
-# 2D Histogram of Impact Positions at z = 1.0 m
-# ----------------------------
-z_target = 1.0
-r   = z_target / np.cos(theta)
-x0  = np.random.uniform(-half, half, N)
-y0  = np.random.uniform(-half, half, N)
-dx  = r * np.sin(theta) * np.cos(phi)
-dy  = r * np.sin(theta) * np.sin(phi)
-xh  = x0 + dx
-yh  = y0 + dy
+# 2D Histogram plot
+ax2d = fig.add_subplot(gs[1])
+hist2d = ax2d.hist2d(xh[inside], yh[inside], bins=100, cmap='viridis')
+fig.colorbar(hist2d[3], ax=ax2d, label='Counts')
+ax2d.set_xlabel('x [m]')
+ax2d.set_ylabel('y [m]')
+ax2d.set_title('2D Impact Position Histogram (z = 1.0 m)')
+ax2d.axis('equal')
+ax2d.grid(False)
 
-inside = (
-    (xh >= -half) & (xh <= half) &
-    (yh >= -half) & (yh <= half)
-)
-
-# Plot 2D histogram for accepted particles only
-plt.figure(figsize=(8, 6), facecolor='white')
-plt.hist2d(xh[inside], yh[inside], bins=100, cmap='viridis')
-plt.colorbar(label='Counts')
-plt.xlabel('x [m]')
-plt.ylabel('y [m]')
-plt.title('2D Impact Position Histogram on Bottom Detector (z = 1.0 m)')
-plt.grid(False)
-plt.axis('equal')
 plt.tight_layout()
 plt.show()
 
 # ----------------------------
 # Plot the θ Distributions
 # ----------------------------
-
 fig, (ax_gen, ax) = plt.subplots(2, 1, figsize=(8, 12), facecolor='white', sharex=True)
 
-# ----------------------------
-# Plot the Generated θ Distribution (Top subplot)
-# ----------------------------
 ax_gen.hist(theta_deg, bins=bins, histtype='step', linewidth=1.5, label='Generated θ')
 ax_gen.set_ylabel('Counts')
 ax_gen.set_title('Generated Theta Distribution (Top Detector)')
 ax_gen.legend()
 ax_gen.grid(True)
 
-# ----------------------------
-# Plot the Measured θ Distribution (Bottom subplot)
-# ----------------------------
 accepted_events = {}
-
 for z in z_values:
     r   = z / np.cos(theta)
     x0  = np.random.uniform(-half, half, N)
@@ -163,16 +152,11 @@ ax.set_title('Theta Distribution for Different Trigger Distances (Bottom Detecto
 ax.legend()
 ax.grid(True)
 
-
 # ----------------------------
-# Plot the φ Distribution
+# Plot the φ Distributions
 # ----------------------------
-
 fig_phi, (ax_phi_gen, ax_phi_meas) = plt.subplots(2, 1, figsize=(8, 12), facecolor='white', sharex=True)
 
-# ----------------------------
-# Plot the Generated φ Distribution (Top subplot)
-# ----------------------------
 phi_deg = np.degrees(phi)
 phi_bins = np.linspace(0, 360, 181)
 gen_counts_phi, _ = np.histogram(phi_deg, bins=phi_bins)
@@ -189,9 +173,6 @@ ax_phi_gen.set_title('Generated Phi Distribution (Top Detector)')
 ax_phi_gen.legend()
 ax_phi_gen.grid(True)
 
-# ----------------------------
-# Plot the Generated φ Distribution (Bottom subplot)
-# ----------------------------
 for z in z_values:
     r   = z / np.cos(theta)
     x0  = np.random.uniform(-half, half, N)
