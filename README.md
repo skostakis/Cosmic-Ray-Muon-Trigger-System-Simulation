@@ -13,3 +13,5 @@ Once a muon is generated on the top surface, we check if its track intersects th
 If θ ≤ θ_max (a specific maximum angle), then the muon's trajectory reaches the bottom detector.
 
 In this case, we consider it a trigger event because both the top and bottom detectors are "hit".
+
+The code theta_max_visual.py helps with visualizing how the θ_max plays a role to the trigger events.
