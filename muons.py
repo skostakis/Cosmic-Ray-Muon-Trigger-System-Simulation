@@ -22,7 +22,7 @@ z_values = [0.0, 0.5, 1.0, 1.5, 2.0]
 side     = 1.0
 half     = side/2
 
-# Draw angles once
+# Angles
 u         = np.random.rand(N)
 theta     = inverse_cdf(u)
 phi       = 2*np.pi*np.random.rand(N)
@@ -59,7 +59,7 @@ inside = (
     (yh >= -half) & (yh <= half)
 )
 
-# Combined Figure with 3D and 2D plots
+# Figure with 3D and 2D plots
 fig = plt.figure(figsize=(14, 6), facecolor='white')
 gs = gridspec.GridSpec(1, 2, width_ratios=[1.2, 1])
 
@@ -97,7 +97,7 @@ hist2d = ax2d.hist2d(xh[inside], yh[inside], bins=100, cmap='viridis')
 fig.colorbar(hist2d[3], ax=ax2d, label='Counts')
 ax2d.set_xlabel('x [m]')
 ax2d.set_ylabel('y [m]')
-ax2d.set_title('2D Impact Position Histogram (z = 1.0 m)')
+ax2d.set_title(f"2D Impact Position Histogram (z = {z_3d} m)")
 ax2d.axis('equal')
 ax2d.grid(False)
 
@@ -107,6 +107,8 @@ plt.show()
 # ----------------------------
 # Plot the θ Distributions
 # ----------------------------
+
+# Generated θ
 fig, (ax_gen, ax) = plt.subplots(2, 1, figsize=(8, 12), facecolor='white', sharex=True)
 
 ax_gen.hist(theta_deg, bins=bins, histtype='step', linewidth=1.5, label='Generated θ')
@@ -115,6 +117,7 @@ ax_gen.set_title('Generated Theta Distribution (Top Detector)')
 ax_gen.legend()
 ax_gen.grid(True)
 
+# Meassured θ
 accepted_events = {}
 for z in z_values:
     r   = z / np.cos(theta)
@@ -155,6 +158,8 @@ ax.grid(True)
 # ----------------------------
 # Plot the φ Distributions
 # ----------------------------
+
+# Generated φ
 fig_phi, (ax_phi_gen, ax_phi_meas) = plt.subplots(2, 1, figsize=(8, 12), facecolor='white', sharex=True)
 
 phi_deg = np.degrees(phi)
@@ -173,6 +178,7 @@ ax_phi_gen.set_title('Generated Phi Distribution (Top Detector)')
 ax_phi_gen.legend()
 ax_phi_gen.grid(True)
 
+# Meassured φ
 for z in z_values:
     r   = z / np.cos(theta)
     x0  = np.random.uniform(-half, half, N)
@@ -211,3 +217,4 @@ ax_phi_meas.grid(True)
 
 plt.tight_layout()
 plt.show()
+
