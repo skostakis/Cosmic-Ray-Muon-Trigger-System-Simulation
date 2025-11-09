@@ -15,3 +15,5 @@ If θ ≤ θ_max (a specific maximum angle), then the muon's trajectory reaches 
 In this case, we consider it a trigger event because both the top and bottom detectors are "hit".
 
 The code theta_max_visual.py helps with visualizing how the θ_max plays a role to the trigger events.
+
+My colleague's GitHub repository is the following: https://github.com/koryfidis/montecarlo_cosmic_muon_distribution
