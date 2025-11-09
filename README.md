@@ -1,5 +1,7 @@
 # Cosmic Ray Muon Trigger System Simulation
 
+## Monte Carlo simulation of a cosmic ray muon trigger system
+
 This is Cosmic Ray Muon Trigger System Simulation, a small project I got the chance to work on with my colleague and friend Georgios Koryfidis. The project was done in the context of the course "Graduate Studies in Experimental Data Analysis" and its goal is to simulate cosmic ray muons that pass through two square surfaces acting like detectors.
 
 We simulate muon events that are generated uniformly across the top surface of a detector. Each muon is assigned two angles:
