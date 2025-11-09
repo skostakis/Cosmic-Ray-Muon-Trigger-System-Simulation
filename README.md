@@ -1,7 +1,7 @@
 # Cosmic Ray Muon Trigger System Simulation
 
 ## Monte Carlo simulation of a cosmic ray muon trigger system
-
+<p align="center">
 This is Cosmic Ray Muon Trigger System Simulation, a small project I got the chance to work on with my colleague and friend Georgios Koryfidis. The project was done in the context of the course "Graduate Studies in Experimental Data Analysis" and its goal is to simulate cosmic ray muons that pass through two square surfaces acting like detectors.
 
 We simulate muon events that are generated uniformly across the top surface of a detector. Each muon is assigned two angles:
@@ -19,3 +19,5 @@ In this case, we consider it a trigger event because both the top and bottom det
 The code theta_max_visual.py helps with visualizing how the θ_max plays a role to the trigger events.
 
 My colleague's GitHub repository is the following: https://github.com/koryfidis/montecarlo_cosmic_muon_distribution
+
+</p>
